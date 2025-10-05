@@ -31,10 +31,7 @@ jobs:
         run: git clone --depth 1 https://github.com/root-project/cling.git C:\dev\cling
 
       - name: Clone LLVM repository
-        run: |
-          git clone --depth 1 https://github.com/root-project/llvm-project.git C:\dev\llvm-project
-          cd C:\dev\llvm-project
-          git checkout cling-latest
+        run: git clone --branch cling-latest --depth 1 https://github.com/root-project/llvm-project.git C:\dev\llvm-project
 
       - name: Configure LLVM + Cling
         shell: cmd
