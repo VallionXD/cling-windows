@@ -1,0 +1,51 @@
+name: Build Cling
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Visual Studio 2022
+        uses: microsoft/setup-msbuild@v1
+        with:
+          vs-version: '2022'
+
+      - name: Install Python 3
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Clone Cling repository
+        run: git clone https://github.com/root-project/cling.git C:\dev\cling
+
+      - name: Clone LLVM repository
+        run: |
+          git clone https://github.com/root-project/llvm-project.git C:\dev\llvm-project
+          cd C:\dev\llvm-project
+          git checkout cling-llvm18
+
+      - name: Configure build
+        run: |
+          cd C:\dev\llvm-project\llvm
+          call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
+          cmake -G "Ninja" -DCMAKE_CXX_STANDARD=20 -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=C:\dev\cling-build\install -DLLVM_EXTERNAL_PROJECTS=cling -DLLVM_EXTERNAL_CLING_SOURCE_DIR=C:\dev\cling -DLLVM_ENABLE_PROJECTS=clang -DLLVM_TARGETS_TO_BUILD="host;NVPTX" -DLLVM_BUILD_TOOLS=OFF -DCLANG_BUILD_TOOLS=OFF C:\dev\llvm-project\llvm
+
+      - name: Build Cling
+        run: |
+          cd C:\dev\llvm-project\llvm
+          cmake --build . --config Release --target install
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: cling-build
+          path: C:\dev\cling-build\install
