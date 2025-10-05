@@ -48,11 +48,14 @@ jobs:
             -DLLVM_TARGETS_TO_BUILD="host;NVPTX" ^
             -DLLVM_BUILD_TOOLS=OFF ^
             -DCLANG_BUILD_TOOLS=OFF ^
+            -DCMAKE_C_COMPILER=cl.exe ^
+            -DCMAKE_CXX_COMPILER=cl.exe ^
             C:\dev\llvm-project\llvm
 
       - name: Build Cling
         shell: cmd
         run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
           cd C:\dev\cling-build
           cmake --build . --target install
 
