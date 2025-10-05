@@ -48,7 +48,7 @@ jobs:
             -DLLVM_TARGETS_TO_BUILD="host;NVPTX" ^
             -DLLVM_BUILD_TOOLS=OFF ^
             -DCLANG_BUILD_TOOLS=OFF ^
-            ..\llvm-project\llvm
+            C:\dev\llvm-project\llvm
 
       - name: Build Cling
         shell: cmd
